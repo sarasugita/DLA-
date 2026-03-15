@@ -1,0 +1,5 @@
+{
+  "name": "DLA Language Evaluation Engine",
+  "description": "A production-ready DLA language evaluation system with a comprehensive debug UI for full evaluation traceability.",
+  "requestFramePermissions": []
+}

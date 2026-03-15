@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DLA Evaluation Data Schema",
+  "type": "object",
+  "definitions": {
+    "transcript_segment": {
+      "type": "object",
+      "properties": {
+        "segment_id": { "type": "string" },
+        "speaker": { "type": "string" },
+        "start_time": { "type": "number" },
+        "end_time": { "type": "number" },
+        "text": { "type": "string" },
+        "task_id": { "type": "string" }
+      },
+      "required": ["segment_id", "speaker", "start_time", "end_time", "text", "task_id"]
+    },
+    "metric_record": {
+      "type": "object",
+      "properties": {
+        "segment_id": { "type": "string" },
+        "metric_id": { "type": "string" },
+        "metric_value": { "type": ["string", "number", "boolean"] },
+        "metric_source": { "enum": ["deterministic", "ai_estimated"] }
+      },
+      "required": ["segment_id", "metric_id", "metric_value", "metric_source"]
+    },
+    "candidate_criterion_record": {
+      "type": "object",
+      "properties": {
+        "segment_id": { "type": "string" },
+        "criterion_id": { "type": "string" },
+        "triggering_metrics": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["segment_id", "criterion_id", "triggering_metrics"]
+    },
+    "evidence_record": {
+      "type": "object",
+      "properties": {
+        "segment_id": { "type": "string" },
+        "criterion_id": { "type": "string" },
+        "evidence_quality": { "type": "integer", "minimum": 0, "maximum": 3 },
+        "independence": { "type": "integer", "minimum": 0, "maximum": 3 },
+        "explanation": { "type": "string" }
+      },
+      "required": ["segment_id", "criterion_id", "evidence_quality", "independence", "explanation"]
+    },
+    "criterion_score_record": {
+      "type": "object",
+      "properties": {
+        "criterion_id": { "type": "string" },
+        "evidence_quality": { "type": "number" },
+        "reproducibility": { "type": "number" },
+        "independence": { "type": "number" },
+        "supporting_segments": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["criterion_id", "evidence_quality", "reproducibility", "independence", "supporting_segments"]
+    }
+  },
+  "properties": {
+    "stage": { "type": "string", "pattern": "^[A-F]$" },
+    "step": { "type": "integer", "minimum": 1, "maximum": 8 },
+    "criterion_scores": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/criterion_score_record" }
+    },
+    "evidence_trace": {
+      "type": "object",
+      "properties": {
+        "segments": { "type": "array", "items": { "$ref": "#/definitions/transcript_segment" } },
+        "metrics": { "type": "array", "items": { "$ref": "#/definitions/metric_record" } },
+        "candidates": { "type": "array", "items": { "$ref": "#/definitions/candidate_criterion_record" } },
+        "evidence": { "type": "array", "items": { "$ref": "#/definitions/evidence_record" } }
+      }
+    }
+  },
+  "required": ["stage", "step", "criterion_scores", "evidence_trace"]
+}
